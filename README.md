@@ -5,7 +5,7 @@ output of the previous day and compared to the day before.
 
 The message looks like:
 > Hi Martijn, yesterday your Solar Panels generated 26.98 Thousand kWh. That's a
-+877% difference compared to to day before.
++877% difference compared to the day before.
 
 You can run this app yourself as well:
 - Deploy this app to Heroku
