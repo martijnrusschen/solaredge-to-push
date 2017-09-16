@@ -1,6 +1,6 @@
 GIT
-  remote: https://github.com/mnwebdev/solaredge
-  revision: 1a0215feffbd1a2c00e7ee2b311b83af424a6ff2
+  remote: https://github.com/martijnrusschen/solaredge
+  revision: 926af3979379a857dbb627d7620f1b324cf67a63
   specs:
     solaredge (0.1.2)
       activesupport (>= 4.2.2)
