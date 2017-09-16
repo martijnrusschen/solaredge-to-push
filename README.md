@@ -9,9 +9,9 @@ The message looks like:
 You can run this app yourself as well:
 - Deploy this app to Heroku
 - Set config vars:
- - SOLAREDGE_KEY (Your SolarEdge API Key)
- - SOLAREDGE_SITE (Your SolarEdge site ID)
- - SLACK_WEBHOOK (Slack webhook key)
+  - SOLAREDGE_KEY (Your SolarEdge API Key)
+  - SOLAREDGE_SITE (Your SolarEdge site ID)
+  - SLACK_WEBHOOK (Slack webhook key)
 
 Based on:
 - SolarEdge API: https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
