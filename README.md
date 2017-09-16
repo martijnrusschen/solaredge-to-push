@@ -12,6 +12,8 @@ You can run this app yourself as well:
   - SOLAREDGE_KEY (Your SolarEdge API Key)
   - SOLAREDGE_SITE (Your SolarEdge site ID)
   - SLACK_WEBHOOK (Slack webhook key)
+- Add the Heroku scheduler add-on
+- Configure the Heroku scheduler add-on to run the following rake task every day: `rake notify_slack`
 
 Based on:
 - SolarEdge API: https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
