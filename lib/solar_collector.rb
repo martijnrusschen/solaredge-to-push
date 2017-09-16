@@ -3,7 +3,7 @@ include ActionView::Helpers::NumberHelper
 class SolarCollector
   def post_to_slack
     message = "Hi Martijn, yesterday your Solar Panels generated #{human_power_yesterday} " +
-    "kWh. That's a #{diffenrence_between_days} difference"
+    "kWh. That's a #{diffenrence_between_days} difference compared to to day before."
 
     notifier.ping message, channel: '#general', username: "RusPower"
   end
