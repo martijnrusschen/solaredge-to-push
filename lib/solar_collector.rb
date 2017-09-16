@@ -2,8 +2,8 @@ include ActionView::Helpers::NumberHelper
 
 class SolarCollector
   def post_to_slack
-    message = "Hi Martijn, yesterday your Solar Panels generated #{human_power_yesterday} " +
-    "kWh. That's a #{diffenrence_between_days} difference compared to the day before."
+    message = "Hi Martijn, yesterday your solar panels generated #{human_power_yesterday}" +
+    "Wh. That's a #{diffenrence_between_days} difference compared to the day before."
 
     notifier.ping message, channel: '#general', username: "RusPower"
   end
@@ -31,7 +31,7 @@ class SolarCollector
   end
 
   def human_power_yesterday
-    number_to_human(power_yesterday, precision: 4)
+    number_with_delimiter(number_with_precision(power_yesterday, precision: 0), precision: 4)
   end
 
   def power_2_days_ago
@@ -43,7 +43,7 @@ class SolarCollector
   end
 
   def difference_in_percentage(old, new)
-    return ' +0%' if old.zero? && new.zero?
+    return '+0%' if old.zero? && new.zero?
 
     if new.zero?
       difference = -100
@@ -56,9 +56,9 @@ class SolarCollector
     end
 
     if difference >= 0
-      " +#{difference}%"
+      "+#{difference}%"
     else
-      " #{difference}%"
+      "#{difference}%"
     end
   end
 end
