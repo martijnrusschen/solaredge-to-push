@@ -1,6 +1,8 @@
 include ActionView::Helpers::NumberHelper
 
 class SolarCollector
+  SITE = ENV['SOLAREDGE_SITE']
+
   def post_to_slack
     message = "Hi Martijn, yesterday your solar panels generated #{human_power_yesterday}" +
     "Wh. That's a #{diffenrence_between_days} difference compared to the day before."
@@ -14,16 +16,12 @@ class SolarCollector
     SolarEdge::Client.new(ENV['SOLAREDGE_KEY'])
   end
 
-  def site
-    ENV['SOLAREDGE_SITE']
-  end
-
   def notifier
     Slack::Notifier.new "https://hooks.slack.com/services/#{ENV['SLACK_WEBHOOK']}"
   end
 
   def fetch_data
-    SolarEdge::Site.new(client, site).energy(resolution: :day, start_date: Time.now-2.days, end_date: Time.now-1.day)
+    SolarEdge::Site.new(client, SITE).energy(resolution: :day, start_date: Time.now-2.days, end_date: Time.now-1.day)
   end
 
   def power_yesterday
