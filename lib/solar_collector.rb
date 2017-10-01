@@ -11,27 +11,17 @@ class SolarCollector
 
   private
 
-  def start_date(resolution)
+  def determine_time_series(resolution)
     case resolution
     when :day
-      Time.now-2.days
+      @start_date = Time.now-2.days
+      @end_date = Time.now-1.day
     when :week
-      Time.now-2.weeks
+      @start_date = Time.now-2.weeks
+      @end_date = Time.now-1.week
     when :month
-      Time.now-2.months
-    when :year
-      Time.now-1.year
-    end
-  end
-
-  def end_date(resolution)
-    case resolution
-    when :day
-      Time.now-1.day
-    when :week
-      Time.now-1.week
-    when :month
-      Time.now-1.month
+      @start_date = Time.now-2.months
+      @end_date = Time.now-1.month
     end
   end
 
@@ -50,10 +40,12 @@ class SolarCollector
   end
 
   def fetch_data(resolution)
+    determine_time_series(resolution)
+
     raw_data = SolarEdge::Site.new(client, SITE).energy(
       resolution: resolution,
-      start_date: start_date(resolution),
-      end_date: end_date(resolution)
+      start_date: @start_date,
+      end_date: @end_date
     )
 
     @old_value = raw_data.pluck(:value).first
