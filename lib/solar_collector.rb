@@ -1,45 +1,101 @@
 include ActionView::Helpers::NumberHelper
 
 class SolarCollector
-  def post_to_slack
-    message = "Hi Martijn, yesterday your solar panels generated #{human_power_yesterday}" +
-    "Wh. That's a #{diffenrence_between_days} difference compared to the day before."
+  SITE = ENV['SOLAREDGE_SITE']
+  CHANNEL = ENV['CHANNEL']
 
-    notifier.ping message, channel: '#general', username: "RusPower"
+  def post(resolution)
+    data = fetch_data(resolution)
+    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
   end
 
   private
 
-  def client
-    SolarEdge::Client.new(ENV['SOLAREDGE_KEY'])
+  def determine_time_series(resolution)
+    case resolution
+    when :day
+      @start_date = Time.now-2.days
+      @end_date = Time.now-1.day
+    when :week
+      @start_date = Time.now-2.weeks
+      @end_date = Time.now-1.week
+    end
   end
 
-  def site
-    ENV['SOLAREDGE_SITE']
+  def message(resolution)
+    case resolution
+    when :day
+      "Hi Martijn, yesterday your solar panels generated #{value_to_human(@new_value)}" +
+      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
+    when :week
+      "Hi Martijn, last week your solar panels generated #{value_to_human(@new_value)}" +
+      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
+    end
+  end
+
+  def color
+    if @new_value > @old_value
+      'good'
+    elsif @new_value < @old_value
+      'danger'
+    else
+      '#439FE0'
+    end
+  end
+
+  def attachments
+    [
+      {
+        color: color,
+        fields: [
+          {
+            title: 'Yesterday',
+            value: @end_date.strftime("%d/%m/%Y"),
+            short: true,
+          },
+          {
+            title: "Production",
+            value: "#{value_to_human(@new_value)}Wh",
+            short: true,
+          },
+          {
+            title: 'Day before',
+            value: @start_date.strftime("%d/%m/%Y"),
+            short: true,
+          },
+          {
+            title: 'Production',
+            value: "#{value_to_human(@old_value)}Wh",
+            short: true,
+          }
+        ]
+      }
+    ]
+  end
+
+  def fetch_data(resolution)
+    determine_time_series(resolution)
+
+    raw_data = SolarEdge::Site.new(client, SITE).energy(
+      resolution: resolution,
+      start_date: @start_date,
+      end_date: @end_date
+    )
+
+    @old_value = raw_data.pluck(:value).first
+    @new_value = raw_data.pluck(:value).last
+  end
+
+  def client
+    SolarEdge::Client.new(ENV['SOLAREDGE_KEY'])
   end
 
   def notifier
     Slack::Notifier.new "https://hooks.slack.com/services/#{ENV['SLACK_WEBHOOK']}"
   end
 
-  def fetch_data
-    SolarEdge::Site.new(client, site).energy(resolution: :day, start_date: Time.now-2.days, end_date: Time.now-1.day)
-  end
-
-  def power_yesterday
-    fetch_data.pluck(:value).last
-  end
-
-  def human_power_yesterday
-    number_with_delimiter(number_with_precision(power_yesterday, precision: 0), precision: 4)
-  end
-
-  def power_2_days_ago
-    fetch_data.pluck(:value).first
-  end
-
-  def diffenrence_between_days
-    difference_in_percentage(power_2_days_ago, power_yesterday)
+  def value_to_human(value)
+    number_with_delimiter(number_with_precision(value, precision: 0), precision: 4)
   end
 
   def difference_in_percentage(old, new)
