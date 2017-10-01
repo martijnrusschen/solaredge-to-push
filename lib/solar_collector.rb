@@ -6,7 +6,7 @@ class SolarCollector
 
   def post(resolution)
     data = fetch_data(resolution)
-    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower"
+    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
   end
 
   private
@@ -31,6 +31,46 @@ class SolarCollector
       "Hi Martijn, last week your solar panels generated #{value_to_human(@new_value)}" +
       "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
     end
+  end
+
+  def color
+    if @new_value > @old_value
+      'good'
+    elsif @new_value < @old_value
+      'danger'
+    else
+      '#439FE0'
+    end
+  end
+
+  def attachments
+    [
+      {
+        color: color,
+        fields: [
+          {
+            title: 'Yesterday',
+            value: @end_date.strftime("%d/%m/%Y"),
+            short: true,
+          },
+          {
+            title: "Production",
+            value: "#{value_to_human(@new_value)}Wh",
+            short: true,
+          },
+          {
+            title: 'Day before',
+            value: @start_date.strftime("%d/%m/%Y"),
+            short: true,
+          },
+          {
+            title: 'Production',
+            value: "#{value_to_human(@old_value)}Wh",
+            short: true,
+          }
+        ]
+      }
+    ]
   end
 
   def fetch_data(resolution)
