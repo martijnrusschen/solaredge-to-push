@@ -4,3 +4,15 @@ desc "This task is called by the Heroku scheduler add-on"
 task :notify_slack => :environment do
   SolarCollector.new.post(:day)
 end
+
+task :weekly_post => :environment do
+  SolarCollector.new.post(:week)
+end
+
+task :monthly_post => :environment do
+  SolarCollector.new.post(:month)
+end
+
+task :yearly_post => :environment do
+  SolarCollector.new.post(:year)
+end

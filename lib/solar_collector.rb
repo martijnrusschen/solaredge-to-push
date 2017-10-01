@@ -5,12 +5,9 @@ class SolarCollector
 
   def post(resolution)
     data = fetch_data(resolution)
-    post_to_slack(@human_new_value, @old_value, @new_value)
-  end
 
-  def post_to_slack(human_new_value, old_value, new_value)
-    message = "Hi Martijn, yesterday your solar panels generated #{human_new_value}" +
-    "Wh. That's a #{difference_in_percentage(old_value, new_value)} difference compared to the day before."
+    message = "Hi Martijn, yesterday your solar panels generated #{@human_new_value}" +
+    "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
 
     notifier.ping message, channel: '#random', username: "RusPower"
   end
