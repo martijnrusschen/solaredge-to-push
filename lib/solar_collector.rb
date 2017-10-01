@@ -2,20 +2,59 @@ include ActionView::Helpers::NumberHelper
 
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
+  CHANNEL = ENV['CHANNEL']
 
   def post(resolution)
     data = fetch_data(resolution)
-
-    message = "Hi Martijn, yesterday your solar panels generated #{@human_new_value}" +
-    "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
-
-    notifier.ping message, channel: '#random', username: "RusPower"
+    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower"
   end
 
   private
 
+  def start_date(resolution)
+    case resolution
+    when :day
+      Time.now-2.days
+    when :week
+      Time.now-2.weeks
+    when :month
+      Time.now-2.months
+    when :year
+      Time.now-1.year
+    end
+  end
+
+  def end_date(resolution)
+    case resolution
+    when :day
+      Time.now-1.day
+    when :week
+      Time.now-1.week
+    when :month
+      Time.now-1.month
+    end
+  end
+
+  def message(resolution)
+    case resolution
+    when :day
+      "Hi Martijn, yesterday your solar panels generated #{@human_new_value}" +
+      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
+    when :week
+      "Hi Martijn, last week your solar panels generated #{@human_new_value}" +
+      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
+    when :month
+      "Hi Martijn, last month your solar panels generated #{@human_new_value}" +
+      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the month before."
+    end
+  end
+
   def fetch_data(resolution)
-    raw_data = SolarEdge::Site.new(client, SITE).energy(resolution: resolution, start_date: Time.now-2.days, end_date: Time.now-1.day)
+    raw_data = SolarEdge::Site.new(client, SITE).energy(
+      resolution: resolution,
+      start_date: start_date(resolution),
+      end_date: end_date(resolution)
+    )
 
     @old_value = raw_data.pluck(:value).first
     @new_value = raw_data.pluck(:value).last
