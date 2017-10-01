@@ -25,12 +25,16 @@ class SolarCollector
   def message(resolution)
     case resolution
     when :day
-      "Hi Martijn, yesterday your solar panels generated #{value_to_human(@new_value)}" +
-      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
+      old_value_label = 'day'
+      new_value_label = 'yesterday'
     when :week
-      "Hi Martijn, last week your solar panels generated #{value_to_human(@new_value)}" +
-      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
+      old_value_label = 'week'
+      new_value_label = 'last week'
     end
+
+    "Hi Martijn, #{new_value_label} your solar panels generated #{value_to_human(@new_value)}" +
+    "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared " +
+    "to the #{old_value_label} before."
   end
 
   def color
