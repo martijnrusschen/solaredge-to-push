@@ -25,10 +25,10 @@ class SolarCollector
   def message(resolution)
     case resolution
     when :day
-      "Hi Martijn, yesterday your solar panels generated #{@human_new_value}" +
+      "Hi Martijn, yesterday your solar panels generated #{value_to_human(@new_value)}" +
       "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the day before."
     when :week
-      "Hi Martijn, last week your solar panels generated #{@human_new_value}" +
+      "Hi Martijn, last week your solar panels generated #{value_to_human(@new_value)}" +
       "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
     end
   end
@@ -44,7 +44,6 @@ class SolarCollector
 
     @old_value = raw_data.pluck(:value).first
     @new_value = raw_data.pluck(:value).last
-    @human_new_value = human_new_value(@new_value)
   end
 
   def client
@@ -55,8 +54,8 @@ class SolarCollector
     Slack::Notifier.new "https://hooks.slack.com/services/#{ENV['SLACK_WEBHOOK']}"
   end
 
-  def human_new_value(new_value)
-    number_with_delimiter(number_with_precision(new_value, precision: 0), precision: 4)
+  def value_to_human(value)
+    number_with_delimiter(number_with_precision(value, precision: 0), precision: 4)
   end
 
   def difference_in_percentage(old, new)
