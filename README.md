@@ -15,7 +15,8 @@ You can run this app yourself as well:
   - SLACK_WEBHOOK (Slack webhook key)
   - CHANNEL (Slack channel you want to post the message in)
 - Add the Heroku scheduler add-on
-- Configure the Heroku scheduler add-on to run the following rake task every day: `rake notify_slack`
+- Configure the Heroku scheduler add-on to run the following rake task every day:
+  `rake daily_post` or `rake weekly_post`
 
 Based on:
 - SolarEdge API: https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
