@@ -25,16 +25,16 @@ class SolarCollector
   def message(resolution)
     case resolution
     when :day
-      old_value_label = 'day'
-      new_value_label = 'yesterday'
+      @old_value_label = 'the day before'
+      @new_value_label = 'yesterday'
     when :week
-      old_value_label = 'week'
-      new_value_label = 'last week'
+      @old_value_label = 'the week week before'
+      @new_value_label = 'last week'
     end
 
-    "Hi Martijn, #{new_value_label} your solar panels generated #{value_to_human(@new_value)}" +
+    "Hi Martijn, #{@new_value_label} your solar panels generated #{value_to_human(@new_value)}" +
     "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared " +
-    "to the #{old_value_label} before."
+    "to #{@old_value_label}."
   end
 
   def color
@@ -53,7 +53,7 @@ class SolarCollector
         color: color,
         fields: [
           {
-            title: 'Yesterday',
+            title: @new_value_label.capitalize,
             value: @end_date.strftime("%d/%m/%Y"),
             short: true,
           },
@@ -63,7 +63,7 @@ class SolarCollector
             short: true,
           },
           {
-            title: 'Day before',
+            title: @old_value_label.capitalize,
             value: @start_date.strftime("%d/%m/%Y"),
             short: true,
           },
