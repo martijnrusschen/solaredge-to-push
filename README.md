@@ -4,8 +4,8 @@ Send your daily PV output to Slack. This app sends you a daily Slack message wit
 output of the previous day and compared to the day before.
 
 The message looks like:
-> Hi Martijn, yesterday your Solar Panels generated 26,979Wh. That's a +877%
-difference compared to the day before.
+![Example message](https://user-images.githubusercontent.com/1412392/31050767-18956ba2-a60a-11e7-85d2-e717d222b5ae.png)
+
 
 You can run this app yourself as well:
 - Deploy this app to Heroku
