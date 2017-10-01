@@ -8,11 +8,3 @@ end
 task :weekly_post => :environment do
   SolarCollector.new.post(:week)
 end
-
-task :monthly_post => :environment do
-  SolarCollector.new.post(:month)
-end
-
-task :yearly_post => :environment do
-  SolarCollector.new.post(:year)
-end

@@ -19,9 +19,6 @@ class SolarCollector
     when :week
       @start_date = Time.now-2.weeks
       @end_date = Time.now-1.week
-    when :month
-      @start_date = Time.now-2.months
-      @end_date = Time.now-1.month
     end
   end
 
@@ -33,9 +30,6 @@ class SolarCollector
     when :week
       "Hi Martijn, last week your solar panels generated #{@human_new_value}" +
       "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the week before."
-    when :month
-      "Hi Martijn, last month your solar panels generated #{@human_new_value}" +
-      "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared to the month before."
     end
   end
 
