@@ -18,6 +18,23 @@ You can run this app yourself as well:
 - Configure the Heroku scheduler add-on to run the following rake task every day:
   `rake daily_post` or `rake weekly_post`
 
+## Setting up Triggi Push notifications
+
+To send push notifications about your daily output, I used a service called Triggi.
+This service allows you to easily connect multiple APIs to each other. I used the
+Triggi Connector to send a push notification to my phone.
+
+### How to set up:
+- Configure the Heroku scheduler add-on to run the following rake task every day:
+  `rake daily_push_notification`
+- Download the Triggi app in the appstore and create an account
+- Go to https://triggi.com/connect/ and follow the steps to create a connector
+- Set config var: TRIGGI_CONNECTOR (This is the private part of the Triggi Connector URL)
+- Now, go to the Triggi app and create a new Trigg:
+  - When: "Connector" is triggered
+  - Then: Send push notification. As part of the push message you need to pass in the variable "passed value"
+  - Save Trigg
+
 Based on:
 - SolarEdge API: https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
 - SolarEdge gem: https://github.com/martijnrusschen/solaredge

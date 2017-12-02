@@ -1,12 +1,21 @@
 include ActionView::Helpers::NumberHelper
+include HTTParty
 
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
   CHANNEL = ENV['CHANNEL']
+  TRIGGI_CONNECTOR = ENV['TRIGGI_CONNECTOR']
 
-  def post(resolution)
-    data = fetch_data(resolution)
+  def post_to_slack(resolution)
+    fetch_data(resolution)
     notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
+  end
+
+  def send_push_notification(resolution)
+    fetch_data(resolution)
+
+    options = { query: { value: message(resolution) } }
+    HTTParty.post("https://connect.triggi.com/c/#{TRIGGI_CONNECTOR}", options)
   end
 
   private
