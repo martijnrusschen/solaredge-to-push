@@ -23,7 +23,7 @@ class SolarCollector
   def determine_time_series(resolution)
     case resolution
     when :day
-      @start_date = Time.now-2.days
+      @start_date = Time.now-31.days
       @end_date = Time.now-1.day
     when :week
       @start_date = Time.now-2.weeks
@@ -34,7 +34,7 @@ class SolarCollector
   def message(resolution)
     case resolution
     when :day
-      @old_value_label = 'the day before'
+      @old_value_label = 'the average of the last 30 days'
       @new_value_label = 'yesterday'
     when :week
       @old_value_label = 'the week week before'
@@ -42,7 +42,7 @@ class SolarCollector
     end
 
     "Hi Martijn, #{@new_value_label} your solar panels generated #{value_to_human(@new_value)}" +
-    "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared " +
+    "Wh. That's #{difference_in_percentage(@old_value, @new_value)}% #{@difference_label} compared " +
     "to #{@old_value_label}."
   end
 
@@ -95,8 +95,11 @@ class SolarCollector
       end_date: @end_date
     )
 
-    @old_value = raw_data.pluck(:value).first
-    @new_value = raw_data.pluck(:value).last
+    values = raw_data.pluck(:value)
+    average = values.sum / values.size.to_f
+
+    @old_value = average
+    @new_value = values.last
   end
 
   def client
@@ -125,9 +128,11 @@ class SolarCollector
     end
 
     if difference >= 0
-      "+#{difference}%"
+      @difference_label = 'higher'
     else
-      "#{difference}%"
+      @difference_label = 'lower'
     end
+
+    difference
   end
 end
