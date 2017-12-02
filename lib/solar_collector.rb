@@ -6,50 +6,33 @@ class SolarCollector
   CHANNEL = ENV['CHANNEL']
   TRIGGI_CONNECTOR = ENV['TRIGGI_CONNECTOR']
 
-  def post_to_slack(resolution)
-    fetch_data(resolution)
-    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
+  def post_to_slack
+    fetch_data
+    notifier.ping message, channel: CHANNEL, username: "RusPower", attachments: attachments
   end
 
-  def send_push_notification(resolution)
-    fetch_data(resolution)
+  def send_push_notification
+    fetch_data
 
-    options = { query: { value: message(resolution) } }
+    options = { query: { value: message } }
     HTTParty.post("https://connect.triggi.com/c/#{TRIGGI_CONNECTOR}", options)
   end
 
   private
 
-  def determine_time_series(resolution)
-    case resolution
-    when :day
-      @start_date = Time.now-2.days
-      @end_date = Time.now-1.day
-    when :week
-      @start_date = Time.now-2.weeks
-      @end_date = Time.now-1.week
-    end
-  end
-
-  def message(resolution)
-    case resolution
-    when :day
-      @old_value_label = 'the day before'
-      @new_value_label = 'yesterday'
-    when :week
-      @old_value_label = 'the week week before'
-      @new_value_label = 'last week'
-    end
+  def message
+    @average_label = 'the average of the last 30 days'
+    @new_value_label = 'yesterday'
 
     "Hi Martijn, #{@new_value_label} your solar panels generated #{value_to_human(@new_value)}" +
-    "Wh. That's a #{difference_in_percentage(@old_value, @new_value)} difference compared " +
-    "to #{@old_value_label}."
+    "kWh. That's #{difference_in_percentage(@average, @new_value)}% #{@difference_label} compared " +
+    "to #{@average_label}."
   end
 
   def color
-    if @new_value > @old_value
+    if @new_value > @average
       'good'
-    elsif @new_value < @old_value
+    elsif @new_value < @average
       'danger'
     else
       '#439FE0'
@@ -68,17 +51,17 @@ class SolarCollector
           },
           {
             title: "Production",
-            value: "#{value_to_human(@new_value)}Wh",
+            value: "#{value_to_human(@new_value)}kWh",
             short: true,
           },
           {
-            title: @old_value_label.capitalize,
+            title: @average_label.capitalize,
             value: @start_date.strftime("%d/%m/%Y"),
             short: true,
           },
           {
             title: 'Production',
-            value: "#{value_to_human(@old_value)}Wh",
+            value: "#{value_to_human(@average)}kWh",
             short: true,
           }
         ]
@@ -86,17 +69,21 @@ class SolarCollector
     ]
   end
 
-  def fetch_data(resolution)
-    determine_time_series(resolution)
+  def fetch_data
+    @start_date = Time.now-31.days
+    @end_date = Time.now-1.day
 
     raw_data = SolarEdge::Site.new(client, SITE).energy(
-      resolution: resolution,
+      resolution: :day,
       start_date: @start_date,
       end_date: @end_date
     )
 
-    @old_value = raw_data.pluck(:value).first
-    @new_value = raw_data.pluck(:value).last
+    values = raw_data.pluck(:value)
+    average = values.sum / values.size.to_f
+
+    @average = average
+    @new_value = values.last
   end
 
   def client
@@ -108,7 +95,8 @@ class SolarCollector
   end
 
   def value_to_human(value)
-    number_with_delimiter(number_with_precision(value, precision: 0), precision: 4)
+    value = value/1_000
+    number_with_precision(value, precision: 2)
   end
 
   def difference_in_percentage(old, new)
@@ -125,9 +113,11 @@ class SolarCollector
     end
 
     if difference >= 0
-      "+#{difference}%"
+      @difference_label = 'higher'
     else
-      "#{difference}%"
+      @difference_label = 'lower'
     end
+
+    difference
   end
 end
