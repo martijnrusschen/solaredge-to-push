@@ -1,14 +1,27 @@
 include ActionView::Helpers::NumberHelper
+include HTTParty
 
 class SolarCollector
-  def post_to_slack
-    message = "Hi Martijn, yesterday your solar panels generated #{human_power_yesterday}" +
-    "Wh. That's a #{diffenrence_between_days} difference compared to the day before."
-
-    notifier.ping message, channel: '#general', username: "RusPower"
+  def execute
+    # post_to_slack
+    send_push_notification
   end
 
   private
+
+  def message
+    "Hi Martijn, yesterday your solar panels generated #{human_power_yesterday}." +
+    "That's a #{diffenrence_between_days} difference compared to the day before."
+  end
+
+  def post_to_slack
+    notifier.ping message, channel: '#general', username: "RusPower"
+  end
+
+  def send_push_notification
+    options = { query: { value: message } }
+    HTTParty.post("https://connect.triggi.com/c/#{ENV['TRIGGI_CONNECTOR']}", options)
+  end
 
   def client
     SolarEdge::Client.new(ENV['SOLAREDGE_KEY'])
@@ -31,7 +44,7 @@ class SolarCollector
   end
 
   def human_power_yesterday
-    number_with_delimiter(number_with_precision(power_yesterday, precision: 0), precision: 4)
+    "#{number_with_delimiter(number_with_precision(power_yesterday, precision: 0), precision: 4)}Wh"
   end
 
   def power_2_days_ago
