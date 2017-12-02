@@ -4,24 +4,21 @@ include HTTParty
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
   CHANNEL = ENV['CHANNEL']
-
-  def execute(resolution)
-    fetch_data(resolution)
-
-    post_to_slack(resolution)
-    send_push_notification(resolution)
-  end
-
-  private
+  TRIGGI_CONNECTOR = ENV['TRIGGI_CONNECTOR']
 
   def post_to_slack(resolution)
+    fetch_data(resolution)
     notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
   end
 
   def send_push_notification(resolution)
+    fetch_data(resolution)
+
     options = { query: { value: message(resolution) } }
-    HTTParty.post("https://connect.triggi.com/c/#{ENV['TRIGGI_CONNECTOR']}", options)
+    HTTParty.post("https://connect.triggi.com/c/#{TRIGGI_CONNECTOR}", options)
   end
+
+  private
 
   def determine_time_series(resolution)
     case resolution
