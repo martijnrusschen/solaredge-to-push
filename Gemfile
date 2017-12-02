@@ -54,7 +54,6 @@ group :development do
 end
 
 group :production do
-  gem 'rails_12factor'
   gem 'sentry-raven'
   gem 'newrelic_rpm'
   gem 'heroku-deflater'
