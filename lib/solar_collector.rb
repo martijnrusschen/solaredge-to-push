@@ -1,15 +1,27 @@
 include ActionView::Helpers::NumberHelper
+include HTTParty
 
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
   CHANNEL = ENV['CHANNEL']
 
-  def post(resolution)
-    data = fetch_data(resolution)
-    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
+  def execute(resolution)
+    fetch_data(resolution)
+
+    post_to_slack(resolution)
+    send_push_notification(resolution)
   end
 
   private
+
+  def post_to_slack(resolution)
+    notifier.ping message(resolution), channel: CHANNEL, username: "RusPower", attachments: attachments
+  end
+
+  def send_push_notification(resolution)
+    options = { query: { value: message(resolution) } }
+    HTTParty.post("https://connect.triggi.com/c/#{ENV['TRIGGI_CONNECTOR']}", options)
+  end
 
   def determine_time_series(resolution)
     case resolution
