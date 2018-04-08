@@ -8,6 +8,7 @@ end
 gem "slack-notifier"
 gem "solaredge", git: "https://github.com/martijnrusschen/solaredge"
 gem "httparty"
+gem "pushover"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
@@ -63,4 +64,4 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-ruby "2.4.2"
+ruby "2.5.0"

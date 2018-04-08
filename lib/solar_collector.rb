@@ -5,6 +5,8 @@ class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
   CHANNEL = ENV['CHANNEL']
   TRIGGI_CONNECTOR = ENV['TRIGGI_CONNECTOR']
+  USER_TOKEN = ENV['PUSHOVER_USER_TOKEN']
+  APP_TOKEN = ENV['PUSHOVER_APP_TOKEN']
 
   def post_to_slack
     fetch_data
@@ -13,9 +15,7 @@ class SolarCollector
 
   def send_push_notification
     fetch_data
-
-    options = { query: { value: message } }
-    HTTParty.post("https://connect.triggi.com/c/#{TRIGGI_CONNECTOR}", options)
+    Pushover.notification(message: message, title: 'RusPower', user: USER_TOKEN, token: APP_TOKEN)
   end
 
   private
