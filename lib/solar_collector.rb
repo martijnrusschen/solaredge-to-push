@@ -1,5 +1,4 @@
 include ActionView::Helpers::NumberHelper
-require 'httparty'
 
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']

@@ -7,7 +7,6 @@ end
 
 gem "slack-notifier"
 gem "solaredge", git: "https://github.com/martijnrusschen/solaredge"
-gem "httparty"
 gem "pushover"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
