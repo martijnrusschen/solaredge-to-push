@@ -1,4 +1,4 @@
-include ActionView::Helpers::NumberHelper
+  include ActionView::Helpers::NumberHelper
 
 class SolarCollector
   SITE = ENV['SOLAREDGE_SITE']
@@ -68,7 +68,7 @@ class SolarCollector
     ]
   end
 
-  def fetch_data
+  def fetch_data_brap
     @start_date = Time.now-31.days
     @end_date = Time.now-1.day
 
