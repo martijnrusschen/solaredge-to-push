@@ -68,7 +68,7 @@ class SolarCollector
     ]
   end
 
-  def fetch_data_brap
+  def fetch_data
     @start_date = Time.now-31.days
     @end_date = Time.now-1.day
 
