@@ -19,3 +19,5 @@ provider:
 functions:
   handler:
     handler: handler.dailySolarPush
+    events:
+      - schedule: cron(30 8 * * ? *)
