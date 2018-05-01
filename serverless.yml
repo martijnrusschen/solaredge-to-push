@@ -1,0 +1,21 @@
+service: serverless-solaredge-push
+
+provider:
+  name: aws
+  stage: prod
+  runtime: nodejs6.10
+  region: eu-west-1
+  memorySize: 512
+  timeout: 30
+  versionFunctions: false
+  environment:
+    SITE_ID: ${ssm:solaredge_site_id}
+    API_KEY: ${ssm:solaredge_api_key}
+    PUSHOVER_USER_TOKEN: ${ssm:pushover_user_token}
+    PUSHOVER_APP_TOKEN: ${ssm:pushover_app_token}
+    # To fetch key: `aws ssm get-parameter --name solaredge_site_id`
+    # To set: aws ssm put-parameter --name solaredge_site_id --type String --value <key>
+
+functions:
+  handler:
+    handler: handler.dailySolarPush
