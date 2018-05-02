@@ -1,5 +1,12 @@
 {
-  "name": "solaredge-slack",
-  "private": true,
-  "dependencies": {}
+  "name": "serverless-solaredge-push",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "lodash": "^4.17.5",
+    "pushover-notifications": "^1.0.0",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {}
 }
