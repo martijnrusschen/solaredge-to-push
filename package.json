@@ -5,7 +5,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "lodash": "^4.17.15",
-    "pushover-notifications": "^1.0.0",
+    "pushover-notifications": "^1.2.2",
     "request": "^2.88.2"
   },
   "devDependencies": {}
